@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Socket</title>
+        <script type="text/javascript">
+            var websocket;
+
+            function getWebSocket(){
+                //如果浏览器支持WebSocket
+                if(window.WebSocket){  
+                    websocket = new WebSocket("ws://localhost:8090/web");  //获得WebSocket对象
+                    
+                    //当有消息过来的时候触发
+                    websocket.onmessage = function(event){ 
+                        var respMessage = document.getElementById("respMessage");
+                        respMessage.value = respMessage.value + "\n" + event.data;
+                    }
+                    
+                    //连接关闭的时候触发
+                    websocket.onclose = function(event){
+                        var respMessage = document.getElementById("respMessage");
+                        respMessage.value = respMessage.value + "\n断开连接";
+                    }
+                    
+                    //连接打开的时候触发
+                    websocket.onopen = function(event){
+                        var respMessage = document.getElementById("respMessage");
+                        respMessage.value = "建立连接";
+                        var data=new Object();
+                        data.protocol=200;
+                        data.jsonString="xxx";
+                        websocket.send(JSON.stringify(data));
+                    }
+                }else{
+                    alert("浏览器不支持WebSocket");
+                }
+            }
+
+            getWebSocket();
+            
+            
+            
+            function sendMsg(msg) { //发送消息 
+                if(window.WebSocket){
+                    if(websocket.readyState == WebSocket.OPEN) { //如果WebSocket是打开状态
+                        websocket.send(msg); //send()发送消息
+                    }
+                }else{
+                    return;
+                }
+            }
+
+            function sendAlarmMsg(obj){    //发送开启/关闭 报警消息
+                var val=obj.value;
+                var data=new Object();
+                if(val.indexOf("开启")!=-1){
+                    data.protocol=226;
+                    data1=new Object();
+                    data1.isTouch=true;
+                    data.jsonString=JSON.stringify(data1);
+                    obj.value="关闭报警"
+                }else{
+                    data.protocol=226;
+                    data1=new Object();
+                    data1.isTouch=false;
+                    data.jsonString=JSON.stringify(data1);
+                    obj.value="开启报警"
+                }
+                sendMsg(JSON.stringify(data));
+            }
+
+            function resetWebSocket(){  //重新连接webSocket
+                if(websocket.readyState == WebSocket.OPEN){
+                    websocket.close();
+                }
+                getWebSocket();
+            }
+
+            function endWebsocket(){
+                if(websocket.readyState == WebSocket.OPEN){
+                    websocket.close();
+                }
+            }
+        </script>
+    </head>
+<body>
+    <form onsubmit="return false">
+        <textarea style="width: 300px; height: 200px;" name="message"></textarea>
+        <input type="button" name="alarmBtn" onclick="sendAlarmMsg(this.form.alarmBtn)" value="开启报警">
+        <input type="button" onclick="sendMsg(this.form.message.value)" value="发送">
+        <input type="button" onclick="resetWebSocket()" value="重新连接webSocket">
+        <input type="button" onclick="endWebsocket()" value="关闭webSocket"><br>
+        <h3>信息</h3>
+        <textarea style="width: 300px; height: 200px;" id="respMessage"></textarea>
+        <input type="button" value="清空" onclick="javascript:document.getElementById('respMessage').value = ''">
+    </form>
+</body>
+</html>
