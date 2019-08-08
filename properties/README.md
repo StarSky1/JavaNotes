@@ -1,0 +1,1 @@
+这是对读取properties文件做的java代码笔记
