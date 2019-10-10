@@ -28,6 +28,7 @@ public class ScheduleExecutorServiceControl {
      * 每天定时安排任务进行执行
      */
     private void executeAt6PerDay() {
+        // 循环任务，按照上一次任务的发起时间计算下一次任务的开始时间
         scheduExec.scheduleAtFixedRate(() -> {
             log.info("execute at 6");
         }, getDelay("6:30:00"), testPerTime, TimeUnit.MILLISECONDS);
@@ -48,6 +49,31 @@ public class ScheduleExecutorServiceControl {
     private long getDelay(String time){
         long initDelay  = DateUtil.getTimeMillis(time) - System.currentTimeMillis();
         return initDelay > 0 ? initDelay : ONEDAY + initDelay;
+    }
+    
+    public void fixedDelay(){
+        // 循环任务，以上一次任务的结束时间计算下一次任务的开始时间
+        mScheduledExecutorService.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("lzp", "scheduleWithFixedDelay:" + System.currentTimeMillis() / 1000);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 1, 1, TimeUnit.SECONDS);
+    }
+    
+    public void schedule(){
+        // 延时任务
+        mScheduledExecutorService.schedule(threadFactory.newThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("lzp", "first task");
+            }
+        }), 1, TimeUnit.SECONDS);
     }
 
     public void func(){
