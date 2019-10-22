@@ -51,4 +51,22 @@ public class GsonUtil {
         }
         return gson;
     }
+
+    public static boolean isBadJson(String json) {
+        return !isGoodJson(json);
+    }
+
+    public static boolean isGoodJson(String json) {
+        if (StringUtils.isBlank(json)) {
+            return false;
+        }
+        try {
+            new JsonParser().parse(json);
+            return true;
+        } catch (JsonParseException e) {
+            LOGINFO.error("bad json: " + json);
+            LOGERROR.error("bad json: " + json);
+            return false;
+        }
+    }
 }
