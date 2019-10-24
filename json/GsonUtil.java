@@ -61,7 +61,11 @@ public class GsonUtil {
             return false;
         }
         try {
-            new JsonParser().parse(json);
+            JsonElement element=new JsonParser().parse(json);
+            if(element instanceof JsonPrimitive){
+                //simple content,not a good json
+                return false;
+            }
             return true;
         } catch (JsonParseException e) {
             LOGINFO.error("bad json: " + json);
