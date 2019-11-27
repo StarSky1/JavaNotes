@@ -1,7 +1,4 @@
 
-import wgtx.maven01.JwtToken;
-
-
 
 /**
  * 签名验证类
