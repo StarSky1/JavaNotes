@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class RedisPool {
     private static JedisPool pool;//jedis连接池
-    private static Properties properties= PropertiesUtil.loadProperties("/redis.properties");
+    private static Properties properties= PropertiesUtil.loadProperties("redis.properties");
     private static Integer maxTotal = Integer.parseInt(properties.getProperty("redis.max.total","20")); //最大连接数
     private static Integer maxIdle = Integer.parseInt(properties.getProperty("redis.max.idle","20"));//在jedispool中最大的idle状态(空闲的)的jedis实例的个数
     private static Integer minIdle = Integer.parseInt(properties.getProperty("redis.min.idle","20"));//在jedispool中最小的idle状态(空闲的)的jedis实例的个数
@@ -39,7 +39,10 @@ public class RedisPool {
     }
 
     public static Jedis getJedis(){
-        return pool.getResource();
+        Jedis jedis=pool.getResource();
+        //默认使用db0数据库，这里，我们手动选择db0数据库，方便后期更改
+        jedis.select(0);
+        return jedis;
     }
 
 

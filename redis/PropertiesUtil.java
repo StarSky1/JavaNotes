@@ -20,6 +20,16 @@ public class PropertiesUtil {
             in = PropertiesUtil.class
                     .getResourceAsStream(filename);
             properties.load(in);
+            //如果配置文件存在jar包之外
+            //            String redisConf=System.getProperty("user.dir") + File.separator + "config" + File.separator+filename;
+//            File file = new File(redisConf);
+//            if (file.exists()) {
+//                System.out.println("redis.properties配置文件存在，其路径为：" + file.getCanonicalPath());
+//                in = new FileInputStream(file);
+//                properties.load(in);
+//            } else {
+//                System.out.println("log4j2.xml配置文件不存在，log4j2初始化失败");
+//            }
         } catch (IOException e) {
             LOGINFO.error("读取配置文件失败：",e);
             LOGERROR.error("读取配置文件失败：",e);
