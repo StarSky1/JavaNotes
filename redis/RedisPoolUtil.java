@@ -1,7 +1,6 @@
-
 import redis.clients.jedis.Jedis;
 
-import static com.wgtx.App.LOGERROR;
+import java.util.Map;
 
 /**
  * redis工具类
@@ -73,6 +72,82 @@ public class RedisPoolUtil {
             jedis = RedisPool.getJedis();
             result = jedis.get(key);
         } catch (Exception e) {
+            LOGERROR.error("get key:{} error", key, e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisPool.returnResource(jedis);
+        return result;
+    }
+
+    public static <T> T hget(String hkey,String key,Class<T> type){
+        Jedis jedis=null;
+        T t=null;
+        try {
+            jedis=RedisPool.getJedis();
+            String str=jedis.hget(hkey,key);
+            t=GsonUtil.jsonToObject(str,type);
+        }catch (Exception e){
+            LOGERROR.error("get key:{} error", key, e);
+            RedisPool.returnBrokenResource(jedis);
+            return t;
+        }
+        RedisPool.returnResource(jedis);
+        return t;
+    }
+
+    public static Map<String,String> hgetAll(String key){
+        Jedis jedis=null;
+        Map<String,String> result=null;
+        try{
+            jedis=RedisPool.getJedis();
+            result=jedis.hgetAll(key);
+        }catch (Exception e){
+            LOGERROR.error("get key:{} error", key, e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisPool.returnResource(jedis);
+        return result;
+    }
+
+    public static Long hset(String hkey,String key,String value){
+        Jedis jedis = null;
+        Long result = null;
+        try {
+            jedis = RedisPool.getJedis();
+            result = jedis.hset(hkey,key, value);
+        } catch (Exception e) {
+            LOGERROR.error("set key:{} value:{} error", key, value, e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisPool.returnResource(jedis);
+        return result;
+    }
+
+    public static boolean hexists(String hkey,String key){
+        Jedis jedis=null;
+        boolean result=false;
+        try{
+            jedis=RedisPool.getJedis();
+            result=jedis.hexists(hkey,key);
+        }catch (Exception e){
+            LOGERROR.error("get key:{} error", key, e);
+            RedisPool.returnBrokenResource(jedis);
+            return result;
+        }
+        RedisPool.returnResource(jedis);
+        return result;
+    }
+
+    public static boolean exists(String key){
+        Jedis jedis=null;
+        boolean result=false;
+        try{
+            jedis=RedisPool.getJedis();
+            result=jedis.exists(key);
+        }catch (Exception e){
             LOGERROR.error("get key:{} error", key, e);
             RedisPool.returnBrokenResource(jedis);
             return result;
